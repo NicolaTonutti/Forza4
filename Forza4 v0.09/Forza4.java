@@ -1,29 +1,80 @@
 class Forza4{
     
     public static void main(String[] args){
-        
-        while(true){  //Loop infinito
-            int gamemode = menu();
-            if(gamemode == 3)
-                return;
-            
-            gioco(gamemode);
-        }        
+        menu();
     }
-    
-    static int menu(){
-        int gamemode;
-        
-        System.out.println("Che modalita' vuoi giocare?\n1 - Player vs AI\n2 - Player vs Player\n3 - esci"); //Chiedi all'utente che modalita' vuole giocare
-        do{
-            gamemode = Leggi.unInt();
+
+    static void menu()
+    {
+        Utili.pulisci();
+
+        int mode;
+
+        System.out.print(""
+            +"==========\n"
+            +"  Forza4\n"
+            +"==========\n\n"
+
+            +"1) Gioca\n"
+            +"2) Aiuto\n"
+            +"3) Esci\n"
+        );
+
+        do
+        {
+            mode = Leggi.unInt();
             
-        }while(gamemode <= 0 || gamemode >= 4);
+        } while(mode <= 0 || mode > 3);
+
+        switch(mode)
+        {
+            case 1: {
+                menu_gamemode();                
+                break;
+            }
+
+            case 2:
+            case 3:
+                System.exit(0);
+            
+            default: return;
+        }
+    }
+
+    static void menu_gamemode()
+    {
+        Utili.pulisci();
+
+        int gmode;
         
-        return gamemode;
-    }    
+        System.out.print(""
+            +"==========\n"
+            +"  Forza4\n"
+            +"==========\n\n"
+
+            +"Scegli modalità di gioco:\n"
+            +"1) Player Vs AI\n"
+            +"2) Player Vs Player\n\n"
+
+            +"3) Esci\n"
+        );
+
+        do
+        {
+            gmode = Leggi.unInt();
+            
+        } while(gmode <= 0 || gmode > 3);
+
+        if(gmode == 3)
+            menu();
+
+        gioco(gmode);
+    }
+
         
     static void gioco(int gamemode){
+
+        Utili.pulisci();
         
         int COL = 7;
         int RIG = 6;
@@ -141,7 +192,7 @@ class Forza4{
             System.out.print("\n");
         }
 
-        // metodo stampa di prima
+        // metodo di stampa precedente
         /*
         for(int i = 0; i < RIG; i++){
             for(int j = 0; j < COL; j++){ 
