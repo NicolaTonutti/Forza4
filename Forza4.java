@@ -6,38 +6,41 @@ class Forza4{
 
     static void menu()
     {
-        Utili.pulisci();
-
         int mode;
-
-        System.out.print(""
-            +"==========\n"
-            +"  Forza4\n"
-            +"==========\n\n"
-
-            +"1) Gioca\n"
-            +"2) Aiuto\n"
-            +"3) Esci\n"
-        );
-
-        do
-        {
-            mode = Leggi.unInt();
-            
-        } while(mode <= 0 || mode > 3);
-
-        switch(mode)
-        {
-            case 1: {
-                menu_gamemode();                
-                break;
+        
+        while(true){
+                        
+            Utili.pulisci();        
+    
+            System.out.print(""
+                +"==========\n"
+                +"  Forza4\n"
+                +"==========\n\n"
+    
+                +"1) Gioca\n"
+                +"2) Aiuto\n"
+                +"3) Esci\n"
+            );
+    
+            do
+            {
+                mode = Leggi.unInt();
+                
+            } while(mode <= 0 || mode > 3);
+    
+            switch(mode)
+            {
+                case 1: {
+                    menu_gamemode();                
+                    break;
+                }
+    
+                case 2:
+                case 3:
+                    System.exit(0);
+                
+                default: return;
             }
-
-            case 2:
-            case 3:
-                System.exit(0);
-            
-            default: return;
         }
     }
 
@@ -67,11 +70,44 @@ class Forza4{
 
         if(gmode == 3)
             menu();
+        else if(gmode == 1)
+            menu_diffic();
+        else
+            gioco(2, 0);
+    }
+    
+    static void menu_diffic() //menu di selezione della difficolta'
+    {
+        Utili.pulisci();
 
-        gioco(gmode);
+        int diffic;
+        
+        System.out.print(""
+            +"==========\n"
+            +"  Forza4\n"
+            +"==========\n\n"
+
+            +"Scegli difficoltà:\n"
+            +"1) Facile\n"
+            +"2) Media\n"
+            +"3) Difficile\n\n"
+
+            +"4) Esci\n"
+        );
+
+        do
+        {
+            diffic = Leggi.unInt();
+            
+        } while(diffic <= 0 || diffic > 4);
+
+        if(diffic == 4)
+            menu();
+
+        gioco(1, diffic);
     }
 
-    static void gioco(int gamemode){
+    static void gioco(int gamemode, int diffic){
 
         Utili.pulisci();
         
@@ -91,7 +127,7 @@ class Forza4{
         {
             if(gamemode == 1 && giocatore == 2){ //Se sei in modalita' Player vs Computer e tocca al computer
                 System.out.println("Mossa del computer: ");
-                mossa = ai(m, spazio_col); //Fai scegliere la mossa all'intelligenza artificiale
+                mossa = ai(m, spazio_col, diffic); //Fai scegliere la mossa all'intelligenza artificiale
             }
             else{
                 do{
@@ -113,13 +149,20 @@ class Forza4{
             
             int vincitore = controlla4(m, giocatore);
             if(vincitore >= 1){ //Se la funzione controlla4 ritorna un numero uguale o maggiore a 1 significa chequalcuno ha vinto
+                System.out.println("\n-----------------------------------------");
                 if(gamemode == 1 && vincitore == 2){ //Se stai giocando in modalita Player vs computer e il vincitore e' il computer
                     System.out.println("Il computer ha vinto!"); //Stampa che il computer ha vinto
+                }
+                else if(vincitore == 3){ //...Altrimenti se e' pareggio stampa che c'e' pareggio
+                    System.out.println("Pareggio");
                 }
                 else{ //...Altrimenti se ha vinto un umano stampa che l'umano ha vinto e non il computer
                     System.out.println("Giocatore " + vincitore + " ha vinto!"); //Stampa chi ha vinto
                 }
-                return;
+                System.out.println("-----------------------------------------\n\n\n");
+                System.out.println("premi un carattere e poi invio per continuare");
+                Leggi.unChar();
+                return;               
             }
             
             giocatore = ((giocatore+1)%(4-giocatore)); //a fine turno Cambia giocatore
@@ -292,27 +335,41 @@ class Forza4{
             }                    
         }
         
-        
+        int[] spazio_col = {0,0,0,0,0,0,0};
+        updateSpazioCol(m,spazio_col);
+        for(int i = 0; i < 7; i++){
+            if(spazio_col[i] > -1){
+                break;
+            }
+            else if(i == 6){
+                return 3; //ritorna pareggio perche' la matrice e' piena
+            }
+        }
         
         return 0; //Returna 0 se nessuno ha ancora vinto
     }
     
     
     
-    static int ai(int m[][], int spazio_col[]){ //Intelligenza artificiale
+    static int ai(int m[][], int spazio_col[], int diffic){ //Intelligenza artificiale
         int[] opzioni = {0,0,0,0,0,0,0}; //La priorita' di ogni mossa
         int mossa;        
-        mossa = (int)Math.floor(Math.random()*7); //genera numeri randomici da 0 a 6
+        mossa = (int)Math.floor(Math.random()*7);  //genera numeri randomici da 0 a 6
+        int nMossePrev = 2;  //Numero di mosse da prevedere (1 = calcola solo la mossa successiva, 4 = calcola le 4 mosse successive, ecc...)
         
-               
+        if(diffic == 1)       
+            nMossePrev = 2; 
+        else if(diffic == 2)       
+            nMossePrev = 4;
+        else if(diffic == 3)       
+            nMossePrev = 8;
         
-        int nMossePrev = 4; //Numero di mosse da prevedere (1 = calcola solo la mossa successiva, 4 = calcola le 4 mosse successive, ecc...)
         for(int i = 0; i<7; i++){
             opzioni[i] = prevediMosse(m, i, nMossePrev, 2, 0);
             if(spazio_col[i] <= -1){
                 opzioni[i] = -999999999; //rendi impossibile posizionare un gettone in una colonna piena                
             }
-            System.out.println("questo e' valore " + i + ": " + opzioni[i]);
+            //System.out.println("questo e' valore " + i + ": " + opzioni[i]);  //Linea di debug
         }    
         
         //Scegli la mossa con la priorita' piu' alta
@@ -350,10 +407,10 @@ class Forza4{
        
         if(controlla4(tempMatr, giocatore) == giocatore){ //controlla se la pedina aggiunta fa vincere la partita a chi l'ha giocata
             if(giocatore == 2){
-                return accw + (int)(Math.pow(nMossePrev, 8)); //aumenta l'accumulatore di vittorie di 51
+                return accw + (int)(Math.pow(8, nMossePrev-1)); //aumenta l'accumulatore di vittorie di 51
             }    
             else{
-                return accw - (int)(Math.pow(nMossePrev, 8)); //diminuisci l'accumulatore di vittorie di 50, in questo modo eviti che il giocatore possa fare una mossa vincente
+                return accw - (int)(Math.pow(8, nMossePrev-1)); //diminuisci l'accumulatore di vittorie di 50, in questo modo eviti che il giocatore possa fare una mossa vincente
             } 
         }
         
