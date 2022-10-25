@@ -71,7 +71,6 @@ class Forza4{
         gioco(gmode);
     }
 
-        
     static void gioco(int gamemode){
 
         Utili.pulisci();
@@ -91,6 +90,7 @@ class Forza4{
         while(true)
         {
             if(gamemode == 1 && giocatore == 2){ //Se sei in modalita' Player vs Computer e tocca al computer
+                System.out.println("Mossa del computer: ");
                 mossa = ai(m, spazio_col); //Fai scegliere la mossa all'intelligenza artificiale
             }
             else{
@@ -126,6 +126,20 @@ class Forza4{
             
         }
     }
+    
+    
+    static void updateSpazioCol(int[][] m, int[] spazio_col){ //metodo per aggiornare l'array dello spazio in una colonna
+        for(int i = 0; i <= 6; i++){
+            for(int j = 5; j>=0; j--){
+                spazio_col[i] = -1; //se la colonna e' piena diventa -1
+                if(m[j][i] == 0){
+                    spazio_col[i] = j; //aggiorna valore di spazio della colonna
+                    break;
+                }            
+            }
+        }
+    }
+        
     
     static void stampa(int m[][], int RIG, int COL){ //Metodo per stampare
 
@@ -237,7 +251,7 @@ class Forza4{
                     cnt_oriz++;
                     cnt_vert[j]++;
                     if(cnt_oriz == 4 || cnt_vert[j] == 4){ //VITTORIA 4 IN FILA ORIZZONTALE O VERTICALE
-                        return giocatore; //returna un valore in base a chi ha vinto 
+                        return giocatore; //returna un valore in base a chi ha vinto (1 = giocatore 1, 2 = giocatore 2 o computer )
                     }
                 }
                 else{
@@ -257,7 +271,7 @@ class Forza4{
                         break;
                     }
                     else if(cntd >= 3){ //VITTORIA 4 IN FILA DIAGONALE
-                        return giocatore; //returna un valore in base a chi ha vinto 
+                        return giocatore; //returna un valore in base a chi ha vinto (1 = giocatore 1, 2 = giocatore 2 o computer )
                     }
                 }
             }                    
@@ -272,7 +286,7 @@ class Forza4{
                         break;
                     }
                     else if(cntd >= 3){ //VITTORIA 4 IN FILA DIAGONALE
-                        return giocatore; //returna un valore in base a chi ha vinto 
+                        return giocatore; //returna un valore in base a chi ha vinto (1 = giocatore 1, 2 = giocatore 2 o computer )
                     }
                 }
             }                    
@@ -283,129 +297,85 @@ class Forza4{
         return 0; //Returna 0 se nessuno ha ancora vinto
     }
     
+    
+    
     static int ai(int m[][], int spazio_col[]){ //Intelligenza artificiale
         int[] opzioni = {0,0,0,0,0,0,0}; //La priorita' di ogni mossa
         int mossa;        
-        mossa = (int)Math.floor(Math.random()*(6-0+1)+0); //genera numeri randomici
+        mossa = (int)Math.floor(Math.random()*7); //genera numeri randomici da 0 a 6
         
+               
         
-        //CONTROLLA MOSSE POSSIBILI
-        for(int j = 0; j<7; j++){     //6 = quantita' righe  
-            
-            //CONTROLLA SE C'E' SPAZIO NELLA COLONNA
-            if(spazio_col[j] <= -1){
-                opzioni[j] = -1; //Se non c'è spazio nella colonna allora non puoi mettere un gettone qua
-                continue;
+        int nMossePrev = 4; //Numero di mosse da prevedere (1 = calcola solo la mossa successiva, 4 = calcola le 4 mosse successive, ecc...)
+        for(int i = 0; i<7; i++){
+            opzioni[i] = prevediMosse(m, i, nMossePrev, 2, 0);
+            if(spazio_col[i] <= -1){
+                opzioni[i] = -999999999; //rendi impossibile posizionare un gettone in una colonna piena                
             }
-            
-            
-            //CONTROLLA SE avversario ha due o piu' gettoni in fila ed e' il caso di bloccarlo
-            //CONTROLLO A DESTRA
-            if(j <= 3){               
-                //ORIZZONTALE
-                for(int cnt = 1; cnt < 3; cnt++){ 
-                    if(m[spazio_col[j]][j + cnt] != 1){
-                        break;
-                    }
-                    if(cnt >= 2){
-                        opzioni[j] = 100;
-                    }                
-                }
-                
-                //DIAGONALE BASSO
-                if(spazio_col[j] <= 2 ){
-                    for(int cnt = 1; cnt < 3; cnt++){ 
-                        if(m[spazio_col[j] - cnt] [j + cnt] != 1){
-                            break;
-                        }
-                        if(cnt >= 2){
-                            opzioni[j] = 100;
-                        }                
-                    }
-                }
-                
-                //DIAGONALE ALTO
-                if(spazio_col[j] >= 3 ){
-                    for(int cnt = 1; cnt < 3; cnt++){ 
-                        if(m[spazio_col[j] + cnt][j + cnt] != 1){
-                            break;
-                        }
-                        if(cnt >= 2){
-                            opzioni[j] = 100;
-                        }                
-                    }
-                }
-                
-                
-            }  
-            
-            //CONTROLLO A SINISTRA
-            if(j >= 3){               
-                //ORIZZONTALE               
-                for(int cnt = 1; cnt < 3; cnt++){ 
-                    if(m[spazio_col[j]][j - cnt] != 1){
-                        break;
-                    }
-                    if(cnt >= 2){
-                        opzioni[j] = 100;
-                    }                
-                }
-                
-                //DIAGONALE BASSO
-                if(spazio_col[j] <= 2 ){
-                    for(int cnt = 1; cnt < 3; cnt++){ 
-                        if(m[spazio_col[j] - cnt][j - cnt] != 1){
-                            break;
-                        }
-                        if(cnt >= 2){
-                            opzioni[j] = 100;
-                        }                
-                    }
-                }
-                
-                //DIAGONALE ALTO
-                if(spazio_col[j] >= 3 ){
-                    for(int cnt = 1; cnt < 3; cnt++){ 
-                        if(m[spazio_col[j] + cnt][j - cnt] != 1){
-                            break;
-                        }
-                        if(cnt >= 2){
-                            opzioni[j] = 100;
-                        }                
-                    }
-                }
-                
-                
-            }
-            
-            
-            //CONTROLLO VERTICALE IN BASSO
-            if(spazio_col[j] <= 2 ){
-                for(int cnt = 1; cnt < 3; cnt++){ 
-                    if(m[spazio_col[j] - cnt][j] != 1){
-                        break;
-                    }
-                    if(cnt >= 2){
-                        opzioni[j] = 100;
-                    }                
-                } 
-            }
-        
-            
-            
-        }
-        
+            System.out.println("questo e' valore " + i + ": " + opzioni[i]);
+        }    
         
         //Scegli la mossa con la priorita' piu' alta
-        int max = 0;
-        for(int j = 0; j < 7; j++){
-            if(opzioni[j] > max){
-                mossa = j;
+        int max = -999999999;
+        for(int i = 0; i < 7; i++){
+            if(opzioni[i] > max || (opzioni[i] == max && Math.random() >= 0.5 ) ){
+                mossa = i;
+                max = opzioni[i]; //aggiorna max
+            }
+        }
+        
+        return mossa;
+    }
+    
+    
+    static int prevediMosse(int m[][], int col, int nMossePrev, int giocatore, int accw){ //matrice temporanea, colonna dove viene inserito il gettone, numero di mosse da calcolare, giocatore che compie la mossa, accumulatore vittorie (incrementa ogni volta che viene trovata una mossa vincente)
+        int[] spazio_col = new int[7];
+        updateSpazioCol(m, spazio_col); //ottieni il valore dello spazio delle colonne
+        
+        int[][] tempMatr = new int[6][7]; //crea una matrice temporanea dove vengono copiati i valori della matrice m
+        for(int i = 0; i < 6; i++){
+            for(int j = 0; j < 7; j++){
+                tempMatr[i][j] = m[i][j];
             }
         }
         
         
-        System.out.println("\n\nMossa del Computer:\n");
-        return mossa;
+        if(spazio_col[col] >= 0){
+            tempMatr[spazio_col[col]][col] = giocatore; //aggiungi una pedina nel tabellone di gioco simulato
+        }
+        else{ 
+              return accw;    //se pero' non c'e' spazio nella colonna ritorna l'accumulatore delle vittorie
+        }
+        
+       
+        if(controlla4(tempMatr, giocatore) == giocatore){ //controlla se la pedina aggiunta fa vincere la partita a chi l'ha giocata
+            if(giocatore == 2){
+                return accw + (int)(Math.pow(nMossePrev, 8)); //aumenta l'accumulatore di vittorie di 51
+            }    
+            else{
+                return accw - (int)(Math.pow(nMossePrev, 8)); //diminuisci l'accumulatore di vittorie di 50, in questo modo eviti che il giocatore possa fare una mossa vincente
+            } 
+        }
+        
+        
+        //RICORSIONE per prevedere ulteriori mosse future
+        if(nMossePrev > 1){ //solo se le mosse da prevedere non sono finite
+            if(giocatore == 2){
+                giocatore = 1; //cambia il valore del giocatore
+            }
+            else{
+                giocatore = 2;
+            }
+            
+            for(int i = 0; i < 7; i++){
+                
+                accw = prevediMosse(tempMatr, i, nMossePrev-1, giocatore, accw); //ricorsione che diminuisce di 1 nMosseprev 
+            }
+                       
+        }
+        
+        
+        //se nMossePrev è a 1 significa che le mosse da prevedere sono finite, quindi si può già ritornare l'accumulatore
+        return accw;
     }
 }
