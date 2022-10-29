@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=Interfaccia
+comment1.params=args
+comment1.target=void\ Lista(java.lang.String[])
+comment2.params=anima\ numera\ elementi
+comment2.target=void\ Lista(boolean,\ boolean,\ java.lang.String[])
+comment3.params=args
+comment3.target=void\ Pannello(java.lang.String[])
+comment4.params=spazio\ args
+comment4.target=void\ Pannello(int,\ java.lang.String[])
+comment5.params=args
+comment5.target=int\ lunghezzaRiga(java.lang.String[])
+numComments=6
