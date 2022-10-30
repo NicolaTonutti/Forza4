@@ -6,30 +6,31 @@ class Forza4{
     public static void main(String[] args)
     {
         Utili.pulisci();
-
-        Sequenza.riproduci("risorse/avvio", 75);  //riproduce animazione schermata di avvio, con 75 ms di delay tra un frame e l'altro
+        
+        Sequenza.riproduci("risorse/avvio", 75);  //riproduce sequenza schermata di avvio, avanzamento frame ogni 75 ms
         Utili.dormi(1000);
 
         menu();
     }
 
     static void menu()
-    {
-        Utili.pulisci();
-        Sequenza.riproduci("risorse/menu", 75);    //riproduce animazione schermata del menu, con 150 ms di delay tra un frame e l'altro
-
+    {        
         int mode;
         
-        Interfaccia.Lista(true, true,
-            "Gioca",
-            "Aiuto",
-            "",
-            "Esci"
-        );
-
-        //scelta opzione
         do
         {
+            Utili.pulisci();
+            Sequenza.riproduci("risorse/menu", 75);    //riproduce sequenza schermata del menu, avanzamento frame ogni 75 ms
+
+
+            Interfaccia.Lista(true, true,
+                "Gioca",
+                "Aiuto",
+                "",
+                "Esci"
+            );
+
+            //scelta opzione
             mode = Leggi.unInt();
             
         } while(mode <= 0 || mode > 3);
@@ -52,106 +53,103 @@ class Forza4{
     static void guida()
     {
         Utili.pulisci();
-        Sequenza.riproduci("risorse/guida", true);
-        menu();
+        Sequenza.riproduci("risorse/guida", true);  //riproduce sequenza della guida, avanzamento frame manuale
+        menu(); //torna al menu alla fine della guida
     }
-
 
     static void menu_gamemode()
     {
-        Utili.pulisci();
-
         int gamemode;
-
-        Interfaccia.Pannello(5,
-            "Scegli modalità di gioco"
-        );
         
-        Interfaccia.Lista(true, true,
-            "Player Vs AI",
-            "Player Vs Player",
-            "",
-            "Indietro"
-        );
-
-        //scelta modalità di gioco
         do
         {
+            Utili.pulisci();
+
+
+            Interfaccia.Pannello(5,
+                "Scegli modalità di gioco"
+            );
+            
+            Interfaccia.Lista(true, true,
+                "Player Vs AI",
+                "Player Vs Player",
+                "",
+                "Indietro"
+            );
+
+            //scelta modalità di gioco
             gamemode = Leggi.unInt();
         
         } while(gamemode <= 0 || gamemode > 3);
 
-        //torna al menu se si vuole uscire
-        if(gamemode == 3)
+        switch(gamemode)
         {
-            menu();
-            return;
+            case 1:
+                menu_diffic();
+            
+            case 2:
+                gioco(gamemode, 0); //inizia il gioco con la modalità scelta
+            
+            case 3:
+                menu();         
         }
-        
-        if(gamemode == 2)
-            gioco(gamemode, 0);    //inizia il gioco con la modalità scelta
-        else
-            menu_diffic();
     }
-    
     
     static void menu_diffic()
     {
-        Utili.pulisci();
-
         int diffic;
-
-        Interfaccia.Pannello(5,
-            "Scegli modalità di gioco"
-        );
         
-        Interfaccia.Lista(true, true,
-            "Facile",
-            "Medio",
-            "Difficile",
-            "",
-            "Indietro"
-        );
-
-        //scelta modalità di gioco
         do
         {
+            Utili.pulisci();
+
+
+            Interfaccia.Pannello(5,
+                "Scegli modalità di gioco"
+            );
+            
+            Interfaccia.Lista(true, true,
+                "Facile",
+                "Medio",
+                "Difficile",
+                "",
+                "Indietro"
+            );
+
+            //scelta modalità di gioco
             diffic = Leggi.unInt();
         
         } while(diffic <= 0 || diffic > 4);
 
-        //torna al menu se si vuole uscire
+        //torna indietro
         if(diffic == 4)
-        {
-            menu();
-            return;
-        }
+            menu_gamemode();
 
         gioco(1, diffic);    //inizia il gioco con la modalità scelta
     }
     
-    
-
     static void menu_pausa()
     {
         int mode;
         
-        //scelta opzione
         do
         {
             Utili.pulisci();
+            
+            
             Interfaccia.Pannello(10,
                 "PAUSA"
             );
-
+            
             Interfaccia.Lista(false, true,
                 "Riprendi",
                 "",
                 "Ritorna al menu principale"
             );
-
+                
+            //scelta opzione
             mode = Leggi.unInt();
-
+                
             switch(mode)
             {
                 case 1:
@@ -175,11 +173,14 @@ class Forza4{
         
         azzera(m, spazio_col);
         
-        int giocatore = 1;
+        int giocatore;
+        int turno = 0;
         int pos = 0;
         
         while(true) //Loop di gioco
         {
+            giocatore = (turno % 2) + 1;
+            
             if(gamemode == 1 && giocatore == 2){ //Se sei in modalita' Player vs Computer e tocca al computer
                 pos = ai(m, spazio_col, diffic); //Fai scegliere la mossa all'intelligenza artificiale
             }
@@ -187,7 +188,7 @@ class Forza4{
                 do
                 {
                     pos = controlloInput(m, giocatore);
-
+                    
                     if(spazio_col[pos] < 0)
                     {
                         Interfaccia.Pannello(
@@ -195,44 +196,46 @@ class Forza4{
                         );
                         Utili.dormi(500);
                     }
-                    
+
                 } while(spazio_col[pos] < 0);
             }
-
+                
             m[spazio_col[pos]][pos] = giocatore; //1 significa che c'è il gettone del giocatore 1, 2 = G2 oppure computer 
             spazio_col[pos]--; //fa capire al programma che c'è meno spazio nella colonna
             
             int vincitore = controlla4(m, giocatore);
             if(vincitore >= 1){ //Se la funzione controlla4 ritorna un numero uguale o maggiore a 1 significa chequalcuno ha vinto
-
+                
                 Utili.pulisci();
                 stampa(m, pos, giocatore);
                 
-                if(gamemode == 1 && vincitore == 2){ //Se stai giocando in modalita Player vs computer e il vincitore e' il computer
+                if(gamemode == 1 && vincitore == 2){ //Se stai giocando in modalita Player vs computer e il vincitore e' il computer stampa che il computer ha vinto
                     Interfaccia.Pannello(
                         "Il computer ha vinto!",
                         "Andrà meglio la prossima volta"
-                    );    //Stampa che il computer ha vinto
+                    );
                 }
                 else if(vincitore == 3){ //...Altrimenti se e' pareggio stampa che c'e' pareggio
-                    System.out.println("Pareggio");
+                    Interfaccia.Pannello(
+                        "Pareggio"
+                    );
                 }
                 else{ //...Altrimenti se ha vinto un umano stampa che l'umano ha vinto e non il computer
                     Interfaccia.Pannello(
                         "Vince il Giocatore " + vincitore,
                         "Congratulazioni!"
-                    );    //Stampa chi ha vinto
+                    );
                 }
                 
                 Utili.dormi(1000);
                 menu();
                 return;
             }
-            
-            giocatore = ((giocatore+1)%(4-giocatore)); //a fine turno Cambia giocatore
+
+            turno++;
         }
     }
-
+    
     static int controlloInput(int[][] m, int giocatore) //fai scegliere la posizione
     {
         int pos = 0;
@@ -285,7 +288,6 @@ class Forza4{
     
     }
 
-
     static void updateSpazioCol(int[][] m, int[] spazio_col){ //metodo per aggiornare l'array dello spazio in una colonna
         for(int i = 0; i <= 6; i++){
             for(int j = 5; j>=0; j--){
@@ -297,7 +299,6 @@ class Forza4{
             }
         }
     }
-
 
     static void stampa(int m[][], int posizione, int giocatore){ //Metodo per stampare
 
@@ -497,7 +498,6 @@ class Forza4{
         
         return mossa;
     }
-    
     
     static int prevediMosse(int m[][], int col, int nMossePrev, int giocatore, int accw){ //matrice temporanea, colonna dove viene inserito il gettone, numero di mosse da calcolare, giocatore che compie la mossa, accumulatore vittorie (incrementa ogni volta che viene trovata una mossa vincente)
         int[] spazio_col = new int[7];
