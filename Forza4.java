@@ -14,7 +14,7 @@ class Forza4{
     }
 
     static void menu()
-    {        
+    {
         int mode;
         
         do
@@ -23,13 +23,16 @@ class Forza4{
             Sequenza.riproduci("risorse/menu", 75);    //riproduce sequenza schermata del menu, avanzamento frame ogni 75 ms
 
 
-            Interfaccia.Lista(true, true,
+            Interfaccia.Separatore(64);
+            System.out.print("\n");
+            
+            Interfaccia.Lista(true, true, 4,
                 "Gioca",
                 "Aiuto",
                 "",
                 "Esci"
             );
-
+            
             //scelta opzione
             mode = Leggi.unInt();
             
@@ -70,7 +73,7 @@ class Forza4{
                 "Scegli modalità di gioco"
             );
             
-            Interfaccia.Lista(true, true,
+            Interfaccia.Lista(true, true, 4,
                 "Player Vs AI",
                 "Player Vs Player",
                 "",
@@ -108,7 +111,7 @@ class Forza4{
                 "Scegli modalità di gioco"
             );
             
-            Interfaccia.Lista(true, true,
+            Interfaccia.Lista(true, true, 4,
                 "Facile",
                 "Medio",
                 "Difficile",
@@ -137,11 +140,11 @@ class Forza4{
             Utili.pulisci();
             
             
-            Interfaccia.Pannello(10,
+            Interfaccia.Pannello(15,
                 "PAUSA"
             );
             
-            Interfaccia.Lista(false, true,
+            Interfaccia.Lista(false, true, 4,
                 "Riprendi",
                 "",
                 "Ritorna al menu principale"
@@ -169,9 +172,9 @@ class Forza4{
         Utili.pulisci();
         
         int[][] m = new int[RIG][COL];        //Matrice di gioco
-        int[] spazio_col = new int[COL]; //Array che indica quanto spazio c'è in ogni colonna
+        int[] spazioCol = new int[COL]; //Array che indica quanto spazio c'è in ogni colonna
         
-        azzera(m, spazio_col);
+        azzera(m, spazioCol);
         
         int giocatore;
         int turno = 0;
@@ -182,26 +185,25 @@ class Forza4{
             giocatore = (turno % 2) + 1;
             
             if(gamemode == 1 && giocatore == 2){ //Se sei in modalita' Player vs Computer e tocca al computer
-                pos = ai(m, spazio_col, diffic); //Fai scegliere la mossa all'intelligenza artificiale
+                pos = ai(m, spazioCol, diffic); //Fai scegliere la mossa all'intelligenza artificiale
             }
             else{
                 do
                 {
                     pos = controlloInput(m, giocatore);
                     
-                    if(spazio_col[pos] < 0)
+                    if(spazioCol[pos] < 0)
                     {
-                        Interfaccia.Pannello(
+                        Interfaccia.Pannello(5,
                             "Spazio occupato!"
                         );
                         Utili.dormi(500);
                     }
 
-                } while(spazio_col[pos] < 0);
+                } while(spazioCol[pos] < 0);
             }
-                
-            m[spazio_col[pos]][pos] = giocatore; //1 significa che c'è il gettone del giocatore 1, 2 = G2 oppure computer 
-            spazio_col[pos]--; //fa capire al programma che c'è meno spazio nella colonna
+
+            mettiPedina(m, spazioCol, giocatore, pos);
             
             int vincitore = controlla4(m, giocatore);
             if(vincitore >= 1){ //Se la funzione controlla4 ritorna un numero uguale o maggiore a 1 significa chequalcuno ha vinto
@@ -210,18 +212,18 @@ class Forza4{
                 stampa(m, pos, giocatore);
                 
                 if(gamemode == 1 && vincitore == 2){ //Se stai giocando in modalita Player vs computer e il vincitore e' il computer stampa che il computer ha vinto
-                    Interfaccia.Pannello(
+                    Interfaccia.Pannello(5,
                         "Il computer ha vinto!",
                         "Andrà meglio la prossima volta"
                     );
                 }
                 else if(vincitore == 3){ //...Altrimenti se e' pareggio stampa che c'e' pareggio
-                    Interfaccia.Pannello(
+                    Interfaccia.Pannello(5,
                         "Pareggio"
                     );
                 }
                 else{ //...Altrimenti se ha vinto un umano stampa che l'umano ha vinto e non il computer
-                    Interfaccia.Pannello(
+                    Interfaccia.Pannello(5,
                         "Vince il Giocatore " + vincitore,
                         "Congratulazioni!"
                     );
@@ -234,6 +236,23 @@ class Forza4{
 
             turno++;
         }
+    }
+
+    static void mettiPedina(int[][] m, int[] spazioCol, int giocatore, int pos)
+    {
+        for(int i=0; i<=spazioCol[pos]; i++)    //itera ogni spazio
+        {
+            m[i][pos] = giocatore;  //imposta pedina
+
+            if(i>0)
+                m[i-1][pos] = 0;    //ripulisce pedina precedente per l'effetto caduta (non molto conveniente ma funziona)
+
+            Utili.pulisci();
+            stampa(m, pos, giocatore);
+            Utili.dormi(25);
+        }
+
+        spazioCol[pos]--;   //abbiamo occupato questo spazio quindi diminuisci spazi disponibili nella colonna
     }
     
     static int controlloInput(int[][] m, int giocatore) //fai scegliere la posizione
@@ -288,16 +307,27 @@ class Forza4{
     
     }
 
-    static void updateSpazioCol(int[][] m, int[] spazio_col){ //metodo per aggiornare l'array dello spazio in una colonna
+    static void updateSpazioCol(int[][] m, int[] spazioCol){ //metodo per aggiornare l'array dello spazio in una colonna
         for(int i = 0; i <= 6; i++){
             for(int j = 5; j>=0; j--){
-                spazio_col[i] = -1; //se la colonna e' piena diventa -1
+                spazioCol[i] = -1; //se la colonna e' piena diventa -1
                 if(m[j][i] == 0){
-                    spazio_col[i] = j; //aggiorna valore di spazio della colonna
+                    spazioCol[i] = j; //aggiorna valore di spazio della colonna
                     break;
                 }            
             }
         }
+    }
+
+    static char simboloGiocatore(int g)
+    {
+        //identifica il carattere corrispondente al giocatore
+        return
+        (
+            (g == 1) ? '@' :
+            (g == 2) ? '#' :
+            ' '
+        );
     }
 
     static void stampa(int m[][], int posizione, int giocatore){ //Metodo per stampare
@@ -316,18 +346,11 @@ class Forza4{
         char c;
         char bx;
 
-        for(int n=1; n<=COL; n++)
-        {
-            System.out.print("  " + n + " ");
-        }
-
-        System.out.print("\n");
-
-        //ciclo per stampare il cursore indicatore della posizione
+        //ciclo per stampare il cursore in posizione
         for(int s=0; s<COL; s++)
         {
             if(posizione == s)
-                System.out.print("  ^ ");
+                System.out.print("  " + simboloGiocatore(giocatore) + " ");
             else
                 System.out.print("    ");
         }
@@ -340,15 +363,7 @@ class Forza4{
         {
             for(int j = 0; j < COL; j++)
             {
-                if(m[i][j] == 1){ //gettone Giocatore 1
-                    c = '@';
-                }
-                else if(m[i][j] == 2){ //gettone Giocatore 2
-                    c = '#';
-                }
-                else {
-                    c = ' ';
-                }
+                c = simboloGiocatore(m[i][j]);
                 
                 System.out.print('\u2502');
                 System.out.print(" " + c + " ");
@@ -451,10 +466,10 @@ class Forza4{
         }
 
         //CONTROLLO PAREGGIO
-        int[] spazio_col = {0,0,0,0,0,0,0};
-        updateSpazioCol(m,spazio_col);
+        int[] spazioCol = {0,0,0,0,0,0,0};
+        updateSpazioCol(m,spazioCol);
         for(int i = 0; i < 7; i++){
-            if(spazio_col[i] > -1){
+            if(spazioCol[i] > -1){
                 break;
             }
             else if(i == 6){
@@ -465,10 +480,10 @@ class Forza4{
         return 0; //Returna 0 se nessuno ha ancora vinto
     }
     
-    static int ai(int m[][], int spazio_col[], int diffic){ //Intelligenza artificiale
+    static int ai(int m[][], int spazioCol[], int diffic){ //Intelligenza artificiale
         int[] opzioni = {0,0,0,0,0,0,0}; //La priorita' di ogni mossa
         int mossa;        
-        mossa = (int)Math.floor(Math.random()*7);  //genera numeri randomici da 0 a 6
+        mossa = Utili.random(7);
         int nMossePrev = 2;  //Numero di mosse da prevedere (1 = calcola solo la mossa successiva, 4 = calcola le 4 mosse successive, ecc...)
         
         if(diffic == 1)       
@@ -480,7 +495,7 @@ class Forza4{
         
         for(int i = 0; i<7; i++){
             opzioni[i] = prevediMosse(m, i, nMossePrev, 2, 0);
-            if(spazio_col[i] <= -1){
+            if(spazioCol[i] <= -1){
                 opzioni[i] = -999999999; //rendi impossibile posizionare un gettone in una colonna piena                
             }
             //System.out.println("questo e' valore " + i + ": " + opzioni[i]);  //Linea di debug
@@ -489,19 +504,20 @@ class Forza4{
         //Scegli la mossa con la priorita' piu' alta
         int max = -999999999;
         for(int i = 0; i < 7; i++){
-            if(opzioni[i] > max || (opzioni[i] == max && Math.random() >= 0.5 ) ){
+            if(opzioni[i] > max || (opzioni[i] == max && Utili.random() >= 0.5 ) ){
                 mossa = i;
                 max = opzioni[i]; //aggiorna max
             }
         }
         
+        Utili.dormi(1000);  //aspetta prima di dare la mossa
         
         return mossa;
     }
     
     static int prevediMosse(int m[][], int col, int nMossePrev, int giocatore, int accw){ //matrice temporanea, colonna dove viene inserito il gettone, numero di mosse da calcolare, giocatore che compie la mossa, accumulatore vittorie (incrementa ogni volta che viene trovata una mossa vincente)
-        int[] spazio_col = new int[7];
-        updateSpazioCol(m, spazio_col); //ottieni il valore dello spazio delle colonne
+        int[] spazioCol = new int[7];
+        updateSpazioCol(m, spazioCol); //ottieni il valore dello spazio delle colonne
         
         int[][] tempMatr = new int[6][7]; //crea una matrice temporanea dove vengono copiati i valori della matrice m
         for(int i = 0; i < 6; i++){
@@ -511,8 +527,8 @@ class Forza4{
         }
         
         
-        if(spazio_col[col] >= 0){
-            tempMatr[spazio_col[col]][col] = giocatore; //aggiungi una pedina nel tabellone di gioco simulato
+        if(spazioCol[col] >= 0){
+            tempMatr[spazioCol[col]][col] = giocatore; //aggiungi una pedina nel tabellone di gioco simulato
         }
         else{ 
               return accw;    //se pero' non c'e' spazio nella colonna ritorna l'accumulatore delle vittorie

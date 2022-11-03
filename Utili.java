@@ -14,4 +14,14 @@ class Utili {
         } catch(Exception ex) {}
     }
 
+    public static int random()
+    {
+        return (int) Math.random();
+    }
+
+    public static int random(int n)
+    {
+        return (int) Math.floor(Math.random()*n);
+    }
+
 }

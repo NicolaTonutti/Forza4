@@ -1,9 +1,28 @@
 class Interfaccia
 {
-    //stampa una tabella
-    public static void Lista(String... args) {Lista(false, false, args);}   //funzione sovraccarico
+    //calcola stringa più lungha tra quelle date come argomenti
+    private static int lunghezzaRiga(String... args)
+    {
+        int max = 0;
 
-    public static void Lista(boolean anima, boolean numera, String... elementi)
+        for(String str : args)
+        {
+            if(str.length() > max)
+                max = str.length();
+        }
+
+        return max;
+    }
+
+
+
+
+    //stampa una tabella
+    public static void Lista(String... args) {Lista(false, false, 0, args);}
+    public static void Lista(boolean anima, String... args) {Lista(anima, false, 0, args); }
+    public static void Lista(boolean anima, boolean numera, String... args) {Lista(anima, numera, 0, args); }
+
+    public static void Lista(boolean anima, boolean numera, int spazio, String... elementi)
     {
         int i = 1;
 
@@ -12,6 +31,9 @@ class Interfaccia
         
         for(String v : elementi)
         {
+            for(int s=0; s<spazio; s++)
+                System.out.print(" ");
+
             if(anima)
                 Utili.dormi(50);
 
@@ -30,7 +52,7 @@ class Interfaccia
     }
 
     //stampa un pannello
-    public static void Pannello(String... args) {Pannello(0, args);}    //funzione sovraccarico
+    public static void Pannello(String... args) {Pannello(0, args);}
 
     public static void Pannello(int spazio, String... args)
     {
@@ -56,17 +78,17 @@ class Interfaccia
         System.out.print("\n\n");
     }
 
+    //stampa un separatore
+    public static void Separatore() {Separatore(32, '\u2550');}
+    public static void Separatore(int lunghezza) {Separatore(lunghezza, '\u2550');}
 
-    private static int lunghezzaRiga(String... args)
+    public static void Separatore(int lunghezza, char ch)
     {
-        int max = 0;
-
-        for(String str : args)
+        System.out.print("\n");
+        for(int i=0; i<lunghezza; i++)
         {
-            if(str.length() > max)
-                max = str.length();
+            System.out.print(ch);
         }
-
-        return max;
+        System.out.print("\n");
     }
 }
