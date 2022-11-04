@@ -1,3 +1,10 @@
+/******************************************************
+
+    Classe per disegnare pannelli e altri componenti
+    grafici
+
+******************************************************/
+
 class Interfaccia
 {
     //calcola stringa più lungha tra quelle date come argomenti

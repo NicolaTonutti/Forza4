@@ -1,3 +1,9 @@
+/******************************************************
+
+    Forza 4
+
+******************************************************/
+
 class Forza4{
 
     private static int COL = 7;
@@ -21,8 +27,7 @@ class Forza4{
         {
             Utili.pulisci();
             Sequenza.riproduci("risorse/menu", 75);    //riproduce sequenza schermata del menu, avanzamento frame ogni 75 ms
-
-
+            
             Interfaccia.Separatore(64);
             System.out.print("\n");
             
@@ -34,8 +39,8 @@ class Forza4{
             );
             
             //scelta opzione
-            mode = Leggi.unInt();
-            
+            mode = F4Leggi.Int();
+
         } while(mode <= 0 || mode > 3);
 
         switch(mode)
@@ -81,7 +86,7 @@ class Forza4{
             );
 
             //scelta modalità di gioco
-            gamemode = Leggi.unInt();
+            gamemode = F4Leggi.Int();
         
         } while(gamemode <= 0 || gamemode > 3);
 
@@ -120,7 +125,7 @@ class Forza4{
             );
 
             //scelta modalità di gioco
-            diffic = Leggi.unInt();
+            diffic = F4Leggi.Int();
         
         } while(diffic <= 0 || diffic > 4);
 
@@ -151,7 +156,7 @@ class Forza4{
             );
                 
             //scelta opzione
-            mode = Leggi.unInt();
+            mode = F4Leggi.Int();
                 
             switch(mode)
             {
@@ -173,12 +178,14 @@ class Forza4{
         
         int[][] m = new int[RIG][COL];        //Matrice di gioco
         int[] spazioCol = new int[COL]; //Array che indica quanto spazio c'è in ogni colonna
-        
+
         azzera(m, spazioCol);
         
-        int giocatore;
         int turno = 0;
+        int giocatore;
+
         int pos = 0;
+        int[] ultimaPos = {0, 0};
         
         while(true) //Loop di gioco
         {
@@ -190,19 +197,21 @@ class Forza4{
             else{
                 do
                 {
-                    pos = controlloInput(m, giocatore);
+                    pos = controlloInput(m, giocatore, ultimaPos[giocatore-1]);
                     
                     if(spazioCol[pos] < 0)
                     {
                         Interfaccia.Pannello(5,
-                            "Spazio occupato!"
+                        "Spazio occupato!"
                         );
                         Utili.dormi(500);
                     }
-
+                    
                 } while(spazioCol[pos] < 0);
             }
-
+            
+            ultimaPos[giocatore-1] = pos;
+            
             mettiPedina(m, spazioCol, giocatore, pos);
             
             int vincitore = controlla4(m, giocatore);
@@ -210,6 +219,8 @@ class Forza4{
                 
                 Utili.pulisci();
                 stampa(m, pos, giocatore);
+
+                System.out.print("\n");
                 
                 if(gamemode == 1 && vincitore == 2){ //Se stai giocando in modalita Player vs computer e il vincitore e' il computer stampa che il computer ha vinto
                     Interfaccia.Pannello(5,
@@ -229,7 +240,8 @@ class Forza4{
                     );
                 }
                 
-                Utili.dormi(1000);
+                F4Leggi.Nulla();
+
                 menu();
                 return;
             }
@@ -255,9 +267,8 @@ class Forza4{
         spazioCol[pos]--;   //abbiamo occupato questo spazio quindi diminuisci spazi disponibili nella colonna
     }
     
-    static int controlloInput(int[][] m, int giocatore) //fai scegliere la posizione
+    static int controlloInput(int[][] m, int giocatore, int pos) //fai scegliere la posizione
     {
-        int pos = 0;
         char cmd;
 
         do  //loop di comandi
@@ -266,7 +277,7 @@ class Forza4{
             stampa(m, pos, giocatore);
 
             //comandi per controllare la posizione
-            cmd = Character.toUpperCase(Leggi.unChar());
+            cmd = Character.toUpperCase(F4Leggi.Char());
 
             switch(cmd)
             {
@@ -337,10 +348,10 @@ class Forza4{
             "TURNO: Giocatore " + giocatore,
             "",
             "Controlli:",
-            "  A - D : Sposta cursore",
-            "  S : Conferma posizione",
+            "   A <> D : Sposta cursore",
+            "   S : Conferma posizione",
             "",
-            "  P : Pausa partita"
+            "   P : Pausa partita"
         );
 
         char c;
@@ -370,33 +381,27 @@ class Forza4{
             }
 
             System.out.print('\u2502');
-
             System.out.print("\n");
 
             //stampa della griglia
-            for(int k=0; k<29; k++)
+            for(int k=0; k<=28; k++)
             {
-                if(k%4 > 0)
-                {
-                    bx = '\u2500';
-                }
-                else
-                {
-                    if(k==0)
-                        bx = ((i==RIG-1) ? '\u2514' : '\u251C');
-
-                    else if(k==28)
-                        bx = ((i==RIG-1) ? '\u2518' : '\u2524');
-
-                    else
-                        bx = ((i==RIG-1) ? '\u2534' : '\u253C');
-
-                }
+                bx = (
+                    (k%4>0) ? '\u2500' :
+                    (k==0) ? ((i==RIG-1) ? '\u2514' : '\u251C') :
+                    (k==28) ? ((i==RIG-1) ? '\u2518' : '\u2524') :
+                    (i==RIG-1) ? '\u2534' : '\u253C'
+                );
 
                 System.out.print(bx);
             }
             System.out.print("\n");
         }
+    }
+
+    static void vittoria(int tipo)
+    {
+
     }
     
     static void azzera(int m[][], int s[]){
@@ -509,9 +514,7 @@ class Forza4{
                 max = opzioni[i]; //aggiorna max
             }
         }
-        
-        Utili.dormi(1000);  //aspetta prima di dare la mossa
-        
+                
         return mossa;
     }
     
@@ -530,8 +533,8 @@ class Forza4{
         if(spazioCol[col] >= 0){
             tempMatr[spazioCol[col]][col] = giocatore; //aggiungi una pedina nel tabellone di gioco simulato
         }
-        else{ 
-              return accw;    //se pero' non c'e' spazio nella colonna ritorna l'accumulatore delle vittorie
+        else{
+            return accw;    //se pero' non c'e' spazio nella colonna ritorna l'accumulatore delle vittorie
         }
         
        

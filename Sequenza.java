@@ -1,16 +1,16 @@
+/******************************************************
+
+    Classe per leggere i file contenenti
+    le animazioni e le illustrazioni della guida
+
+******************************************************/
+
 import java.io.*;
 
 class Sequenza
 {
-    static void riproduci(String nome, boolean abilitaUscita)
-    {
-        riproduci(nome, 0, true);
-    }
-
-    static void riproduci(String nome, int t)
-    {
-        riproduci(nome, t, false);
-    }
+    static void riproduci(String nome, boolean abilitaUscita) {riproduci(nome, 0, true);}
+    static void riproduci(String nome, int t) {riproduci(nome, t, false);}
 
     static void riproduci(String nome, int t, boolean abilitaUscita)
     {
@@ -19,7 +19,6 @@ class Sequenza
         try
         {
             BufferedReader br = new BufferedReader(new FileReader(nome + ".sequenza"));   //inizializza BufferedReader con il file da leggere
-
             String curStr;   //stringa contenente la linea corrente che viene letta
 
             while((curStr = br.readLine()) != null)  //controlla la linea retta se raggiunge il nulla (la fine in caso non ci sia ^F) e avanza linea da leggere allo stesso tempo
@@ -34,7 +33,7 @@ class Sequenza
                 {
                     do
                     {
-                        cmd = Character.toUpperCase(Leggi.unChar());
+                        cmd = Character.toUpperCase(F4Leggi.Char());
 
                         if(cmd == 'E')  //se si preme E si esce dalla sequenza
                         {
