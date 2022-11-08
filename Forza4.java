@@ -393,11 +393,6 @@ class Forza4{
             System.out.print("\n");
         }
     }
-
-    static void vittoria(int tipo)
-    {
-
-    }
     
     static void azzera(int m[][], int s[]){
         for(int i = 0; i < 6; i++){
