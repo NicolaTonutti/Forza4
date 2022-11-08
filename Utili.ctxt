@@ -1,7 +1,12 @@
 #BlueJ class context
 comment0.target=Utili
+comment0.text=\r\n\r\n\ \ \ \ Classe\ di\ utilit\u00E0\ per\ pulizia\ dello\ schermo,\r\n\ \ \ \ pausa\ e\ numeri\ randomici\r\n\r\n
 comment1.params=millis
 comment1.target=void\ dormi(int)
 comment2.params=
 comment2.target=void\ pulisci()
-numComments=3
+comment3.params=
+comment3.target=int\ random()
+comment4.params=n
+comment4.target=int\ random(int)
+numComments=5

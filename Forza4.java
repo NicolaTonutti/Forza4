@@ -368,7 +368,7 @@ class Forza4{
 
         System.out.print("\n\n");
 
-        //utilizza caratteri unicode per la stampa di caratteri della tabella
+        //utilizza caratteri ASCII per la stampa di caratteri della tabella
         
         for(int i = 0; i < RIG; i++)
         {
@@ -376,22 +376,17 @@ class Forza4{
             {
                 c = simboloGiocatore(m[i][j]);
                 
-                System.out.print('\u2502');
+                System.out.print('|');
                 System.out.print(" " + c + " ");
             }
 
-            System.out.print('\u2502');
+            System.out.print('|');
             System.out.print("\n");
 
             //stampa della griglia
             for(int k=0; k<=28; k++)
             {
-                bx = (
-                    (k%4>0) ? '\u2500' :
-                    (k==0) ? ((i==RIG-1) ? '\u2514' : '\u251C') :
-                    (k==28) ? ((i==RIG-1) ? '\u2518' : '\u2524') :
-                    (i==RIG-1) ? '\u2534' : '\u253C'
-                );
+                bx = ( (k%4>0) ? '-' : '+');
 
                 System.out.print(bx);
             }
